@@ -13,6 +13,8 @@ public class PalTrackerApplication {
 
     @Bean
     TimeEntryRepository timeEntryRepository(){
-        return new JdbcTimeEntryRepository();
+        MysqlDataSource dataSource = new MysqlDataSource();
+        dataSource.setUrl(System.getenv("SPRING_DATASOURCE_URL"));
+        return new JdbcTemplate(dataSource);
     }
 }
