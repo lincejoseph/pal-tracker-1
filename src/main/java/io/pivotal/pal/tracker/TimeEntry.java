@@ -1,6 +1,9 @@
 package io.pivotal.pal.tracker;
 
 import java.time.LocalDate;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 public class TimeEntry {
 
     private long id;
@@ -9,22 +12,25 @@ public class TimeEntry {
     private LocalDate date;
     private int hours;
 
-    public TimeEntry() {
-    }
-
-    public TimeEntry(long id, long projectId, long userId, LocalDate date, int hours) {
-        this.id = id;
-        this.projectId = projectId;
-        this.userId = userId;
-        this.date = date;
-        this.hours = hours;
-    }
-
     public TimeEntry(long projectId, long userId, LocalDate date, int hours) {
+        super();
         this.projectId = projectId;
         this.userId = userId;
         this.date = date;
         this.hours = hours;
+    }
+
+    public TimeEntry(long timeEntryId, long projectId, long userId, LocalDate date, int hours) {
+        super();
+        this.id=timeEntryId;
+        this.projectId = projectId;
+        this.userId = userId;
+        this.date = date;
+        this.hours = hours;
+    }
+
+    public TimeEntry() {
+        super();
     }
 
     public long getId() {
@@ -51,6 +57,7 @@ public class TimeEntry {
         this.userId = userId;
     }
 
+    @JsonFormat(pattern="yyyy-MM-dd")
     public LocalDate getDate() {
         return date;
     }
@@ -67,14 +74,48 @@ public class TimeEntry {
         this.hours = hours;
     }
 
-    @java.lang.Override
-    public java.lang.String toString() {
-        return "TimeEntry{" +
-                "id=" + id +
-                ", projectId=" + projectId +
-                ", userId=" + userId +
-                ", date=" + date +
-                ", hours=" + hours +
-                '}';
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((date == null) ? 0 : date.hashCode());
+        result = prime * result + hours;
+        result = prime * result + (int) (id ^ (id >>> 32));
+        result = prime * result + (int) (projectId ^ (projectId >>> 32));
+        result = prime * result + (int) (userId ^ (userId >>> 32));
+        return result;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        TimeEntry other = (TimeEntry) obj;
+        if (date == null) {
+            if (other.date != null)
+                return false;
+        } else if (!date.equals(other.date))
+            return false;
+        if (hours != other.hours)
+            return false;
+        if (id != other.id)
+            return false;
+        if (projectId != other.projectId)
+            return false;
+        if (userId != other.userId)
+            return false;
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "TimeEntry [id=" + id + ", projectId=" + projectId + ", userId=" + userId + ", date=" + date + ", hours="
+                + hours + "]";
+    }
+
+
 }

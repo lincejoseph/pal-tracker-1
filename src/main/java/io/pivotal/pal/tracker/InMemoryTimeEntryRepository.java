@@ -1,45 +1,52 @@
 package io.pivotal.pal.tracker;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 
-import java.util.*;
-import java.time.LocalDate;
+import org.springframework.stereotype.Repository;
 
-@Service
+@Repository
 public class InMemoryTimeEntryRepository implements TimeEntryRepository {
 
+    private final AtomicLong idGenerator= new AtomicLong(0);
+    Map <Long,TimeEntry> db= new HashMap<>();
 
-    private static Map<Long, TimeEntry> dbMap = new HashMap<Long, TimeEntry>();
-    private long idIndex = 1L;
-  /*  static {
-        TimeEntry t1 = new TimeEntry(1L, 12L, new LocalDate(), 15L);
-        dbMap.put(1L,t1);
-        TimeEntry t2 = new TimeEntry(2L, 22L, new LocalDate(), 10L);
-        dbMap.put(2L,t2);
-    } */
-
-    public TimeEntry create(TimeEntry t) {
-        dbMap.put(idIndex, t);
-        idIndex ++;
-        return t;
+    @Override
+    public TimeEntry find(long timeEntryId) {
+        return db.get(timeEntryId);
     }
 
-    public TimeEntry update(TimeEntry t) {
-        dbMap.put(t.getId(), t);
-        return t;
+    @Override
+    public List<TimeEntry> list() {
+        return new ArrayList<>(db.values());
     }
 
-    public TimeEntry find(long id) {
-        return dbMap.get(id);
+    @Override
+    public TimeEntry update(long eq, TimeEntry any) {
+        if(db.containsKey(eq)){
+            any.setId(eq);
+            db.put(eq, any);
+            return any;
+        }
+        return null;
+
     }
 
-    public void delete(long id) {
-        dbMap.remove(id);
+    @Override
+    public void delete(long timeEntryId) {
+        db.remove(timeEntryId);
+
     }
 
-
-
-
-
+    @Override
+    public TimeEntry create(TimeEntry timeEntryToCreate) {
+        timeEntryToCreate.setId(idGenerator.incrementAndGet());
+        db.put(timeEntryToCreate.getId(), timeEntryToCreate);
+        return timeEntryToCreate;
+    }
 
 
 }
